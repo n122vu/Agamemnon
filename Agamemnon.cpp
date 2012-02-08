@@ -19,11 +19,13 @@ Agamemnon::Agamemnon(OBJHANDLE hObj, int fmodel)
     :VESSEL3(hObj, fmodel)
 {
     DefineAnimations();
+	hPanelMesh = NULL;
 
 }
 
 Agamemnon::~Agamemnon()
 {
+	if (hPanelMesh) oapiDeleteMesh (hPanelMesh);
 }
 
 //Define animation for gravity wheel
@@ -41,6 +43,7 @@ DLLCLBK void InitModule (HINSTANCE hModule)
 g_hDLL = hModule;
 
 }
+
 
 ////////////////////////////////////////////////////////
 // SendHudMessage - UMMU 2.0
@@ -63,7 +66,7 @@ void Agamemnon::clbkSetClassCaps (FILEHANDLE cfg)
     iActiveDockNumberForHud = 0; */
 //    SetUMMUAirlockPos();
 	Crew.DefineAirLockShape(AirLockStatus,-5,5,37.5,47.5,479.8,489.8);// Airlock open, 10 meter large 10 meter high 10 meter long
-	Crew.SetMembersPosRotOnEVA(_V(0,-42.5,486.8),_V(0,0,0)); //position when EVA
+	Crew.SetMembersPosRotOnEVA(_V(0,-42.5,486.8),_V(0,1,0)); //position when EVA
 	Crew.SetMaxSeatAvailableInShip(100);// Max Numbers of UMMU for this ship
 	// Add four default members for when the ship is spawned by scenario editor
 	Crew.AddCrewMember("Jack Maynard",41,65,74,"Capt");
@@ -100,38 +103,38 @@ void Agamemnon::clbkSetClassCaps (FILEHANDLE cfg)
 
     //RCS Engine Definitions
     // **Port-side Aft**
-    th_rcs[0] = CreateThruster(_V(-310, 0, -1847.05),_V(1,0,0), EXP_RCSTH, ph_main, EXP_ISP);
+    th_rcs[0] = CreateThruster(_V(-59.7, 0, -702),_V(1,0,0), EXP_RCSTH, ph_main, EXP_ISP);
 
     // **Starboard-side Aft**
-    th_rcs[1] = CreateThruster(_V(310, 0, -1847.05),_V(-1,0,0), EXP_RCSTH, ph_main, EXP_ISP);
+    th_rcs[1] = CreateThruster(_V(59.7, 0, -702),_V(-1,0,0), EXP_RCSTH, ph_main, EXP_ISP);
     
     // **Top Aft**
-    th_rcs[2] = CreateThruster(_V(-85.28, 190.9, -1374.62), _V(0,-1,0), EXP_RCSTH, ph_main, EXP_ISP);
-    th_rcs[3] = CreateThruster(_V(85.28, 190.9, -1374.62), _V(0,-1,0), EXP_RCSTH, ph_main, EXP_ISP);
+    th_rcs[2] = CreateThruster(_V(-59.7, 128.6, -702), _V(0,-1,0), EXP_RCSTH, ph_main, EXP_ISP);
+    th_rcs[3] = CreateThruster(_V(59.7, 128.6, -702), _V(0,-1,0), EXP_RCSTH, ph_main, EXP_ISP);
     
     // **Bottom Aft**
-    th_rcs[4] = CreateThruster(_V(-85.28, -190.9, -1374.62), _V(0,1,0), EXP_RCSTH, ph_main, EXP_ISP);
-    th_rcs[5] = CreateThruster(_V(85.28, -190.9, -1374.62), _V(0,1,0), EXP_RCSTH, ph_main, EXP_ISP);
+    th_rcs[4] = CreateThruster(_V(-59.7, -14.6, -702), _V(0,1,0), EXP_RCSTH, ph_main, EXP_ISP);
+    th_rcs[5] = CreateThruster(_V(59.7, -14.6, -702), _V(0,1,0), EXP_RCSTH, ph_main, EXP_ISP);
 
     // **Port-side Front**
-    th_rcs[6] = CreateThruster(_V(-310,0,1847.05), _V(1,0,0), EXP_RCSTH, ph_main, EXP_ISP);
+    th_rcs[6] = CreateThruster(_V(-59.7,0,702), _V(1,0,0), EXP_RCSTH, ph_main, EXP_ISP);
 
     // **Starboard-side Front**
-    th_rcs[7] = CreateThruster(_V(310.97,0,1847.05), _V(-1,0,0), EXP_RCSTH, ph_main, EXP_ISP);
+    th_rcs[7] = CreateThruster(_V(59.7,0,702), _V(-1,0,0), EXP_RCSTH, ph_main, EXP_ISP);
 
     // **Bow, Topside**
-    th_rcs[8] = CreateThruster(_V(185.28,101.08,1374.62), _V(0,-1,0), EXP_RCSTH, ph_main, EXP_ISP);
-    th_rcs[9] = CreateThruster(_V(-185.28,101.08,1374.62), _V(0,-1,0), EXP_RCSTH, ph_main, EXP_ISP);
+    th_rcs[8] = CreateThruster(_V(-59.7, 128.6, 702), _V(0,-1,0), EXP_RCSTH, ph_main, EXP_ISP);
+    th_rcs[9] = CreateThruster(_V(59.7, 128.6, 702), _V(0,-1,0), EXP_RCSTH, ph_main, EXP_ISP);
 
     // **Bow, Bottom**
-    th_rcs[10] = CreateThruster(_V(185.28,-101.08,1374.62), _V(0,1,0), EXP_RCSTH, ph_main, EXP_ISP);
-    th_rcs[11] = CreateThruster(_V(-185.28,-101.08,1374.62), _V(0,1,0), EXP_RCSTH, ph_main, EXP_ISP);
+    th_rcs[10] = CreateThruster(_V(-59.7, -14.6, 702), _V(0,1,0), EXP_RCSTH, ph_main, EXP_ISP);
+    th_rcs[11] = CreateThruster(_V(59.7, -14.6, 702), _V(0,1,0), EXP_RCSTH, ph_main, EXP_ISP);
 
     // **forward translation thruster (located on stern of ship)
-    th_rcs[12] = CreateThruster(_V(0,0,-2300), _V(0,0,1), EXP_RCSTH, ph_main, EXP_ISP);
+    th_rcs[12] = CreateThruster(_V(0,0,-710), _V(0,0,1), EXP_RCSTH, ph_main, EXP_ISP);
 
     // **reverse translation thruster (located on bow of ship)
-    th_rcs[13] = CreateThruster(_V(0,0,2300), _V(0,0,-1), EXP_RCSTH, ph_main, EXP_ISP);
+    th_rcs[13] = CreateThruster(_V(0,0,710), _V(0,0,-1), EXP_RCSTH, ph_main, EXP_ISP);
 
 //Define Thruster Groups for Attitude Control
 
@@ -480,7 +483,6 @@ void Agamemnon::clbkSetClassCaps (FILEHANDLE cfg)
     //**Add the mesh**
     AddMesh("Agamemnon"); 
 
-
 }
 
 /*
@@ -499,6 +501,31 @@ void Agamemnon::SetUMMUAirlockPos(void)
 
 		}
 } */
+
+void Agamemnon::DefineMainPanel (PANELHANDLE hPanel)
+		{
+			static DWORD panelW = 1280;
+			static DWORD panelH =  400;
+			float fpanelW = (float)panelW;
+			float fpanelH = (float)panelH;
+			static NTVERTEX VTX[4] = {
+				{      0,      0,0,   0,0,0,   0,0},
+				{      0,fpanelH,0,   0,0,0,   0,0},
+				{fpanelW,fpanelH,0,   0,0,0,   0,0},
+				{fpanelW,      0,0,   0,0,0,   0,0}
+			};
+			static WORD IDX[6] = {
+				0,2,1,
+				2,0,3
+			};
+
+		if (hPanelMesh) oapiDeleteMesh (hPanelMesh);
+		hPanelMesh = oapiCreateMesh (0,0);
+		MESHGROUP grp = {VTX, IDX, 4, 6, 0, 0, 0, 0, 0};
+		oapiAddMeshGroup (hPanelMesh, &grp);
+		SetPanelBackground (hPanel, 0, 0, hPanelMesh, panelW, panelH, 0,
+		PANEL_ATTACH_BOTTOM | PANEL_MOVEOUT_BOTTOM);
+		}
 
 // --------------------------------------------------------------
 // Write status to scenario file
@@ -588,6 +615,9 @@ void Agamemnon::clbkPostStep(double simt, double simdt, double mjd)
 	//-----------------------------------------------------
 	if (gravwheel_run == 1) //Test - if wheel is supposed to be running, then execute animation based on variable params
 	{
+		
+		SetAnimation (anim_grav, gravwheel_proc); //Set animation state based on animation state variable value
+
 		if (gravwheel_speed < 0.040) gravwheel_speed = gravwheel_speed + 0.00001;
 
 		double da = oapiGetSimStep() * gravwheel_speed; 
@@ -596,16 +626,24 @@ void Agamemnon::clbkPostStep(double simt, double simdt, double mjd)
 		if (gravwheel_proc >= 1) gravwheel_proc = 0; //Check animation state.  If complete, reset (keep wheel running)
 		gravwheel_proc = gravwheel_proc + da; //Increase animation state variable for sim step based on defined wheel speed
 
-		SetAnimation (anim_grav, gravwheel_proc); //Set animation state based on animation state variable value
+		
 		
 	}
 	
 	if (gravwheel_run == 0)  //Test - if wheel is supposed to stop, then set state based on animation variable params
 	{
-		if (gravwheel_speed > 0) gravwheel_speed = gravwheel_speed - 0.00001; 
+		SetAnimation (anim_grav, gravwheel_proc);
+
+		if (gravwheel_speed > 0) 
+		{
+			gravwheel_speed = gravwheel_speed - 0.00001; 
+			if (gravwheel_proc >=1) gravwheel_proc = 0;  //if grav section is back at start but speed is greater than zero, keep going
+		}
+		
+			
 		double da = oapiGetSimStep() * gravwheel_speed;
 		gravwheel_proc = gravwheel_proc + da;
-		SetAnimation (anim_grav, gravwheel_proc);
+		
 	}
 
 
@@ -614,6 +652,7 @@ void Agamemnon::clbkPostStep(double simt, double simdt, double mjd)
 	// The “Add Mmu without scenario editor” process see PDF doc
 	AddUMmuToVessel();
 
+	
 	
 
 	//-----------------------------------------------------
@@ -829,6 +868,26 @@ bool Agamemnon::clbkDrawHUD(int mode, const HUDPAINTSPEC *hps, oapi::Sketchpad *
 	//		dHudMessageDelay=0;
 	}
     return true; 
+}
+
+bool Agamemnon::clbkLoadPanel2D (int id, PANELHANDLE hPanel,
+  DWORD viewW, DWORD viewH)
+{
+  switch (id) {
+  case 0: 
+    DefineMainPanel (hPanel);
+    ScalePanel (hPanel, viewW, viewH);
+    return true;
+  default:
+    return false;
+  }
+}
+
+void Agamemnon::ScalePanel (PANELHANDLE hPanel, DWORD viewW, DWORD viewH)
+{
+  double defscale = (double)viewW/1280.0;
+  double magscale = max (defscale, 1.0);
+  SetPanelScaling (hPanel, defscale, magscale);
 }
 
 DLLCLBK VESSEL *ovcInit (OBJHANDLE hvessel, int flightmodel) 
